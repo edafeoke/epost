@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ email.subject }}</h1>
+    <p>Sender: {{ email.sender }}</p>
+    <p>Recipient: {{ email.recipient }}</p>
+    <p>Timestamp: {{ email.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+    <p>Body: {{ email.body }}</p>
+{% endblock %}
