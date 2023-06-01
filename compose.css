@@ -65,8 +65,9 @@ body {
 }
 
 .compose-textarea-toolbar {
-    position: absolute;
-    top: -30px;
+    /* position: absolute;
+    top: -30px; */
+    margin: 10px 0;
 }
 
 .compose-textarea-content {

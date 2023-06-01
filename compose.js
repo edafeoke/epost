@@ -21,3 +21,28 @@ document.querySelector('form').addEventListener('submit', function (event) {
 function formatText(command) {
     document.execCommand(command, false, null);
 }
+
+// Function to handle file selection
+function handleFileSelect(event) {
+    const files = event.target.files;
+    const fileList = document.getElementById('file-list');
+    fileList.innerHTML = '';
+
+    // Iterate over selected files
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const listItem = document.createElement('span');
+        listItem.textContent = file.name;
+
+        if (i !== files.length - 1) {
+            listItem.textContent += ',';
+        }
+
+        fileList.appendChild(listItem);
+    }
+}
+
+// Event listener for file input change
+const fileInput = document.getElementById('attachments');
+fileInput.addEventListener('change', handleFileSelect);
+
