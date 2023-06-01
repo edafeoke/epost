@@ -50,6 +50,25 @@ def compose():
     
     return render_template('compose.html')
 
+@app.route('/inbox', methods=['GET', 'POST'])
+def compose():
+    if request.method == 'POST':
+        # sender = request.form['sender']
+        # recipient = request.form['recipient']
+        # subject = request.form['subject']
+        # body = request.form['body']
+
+        # conn = get_db_connection()
+        # conn.execute('INSERT INTO emails (sender, recipient, subject, body) VALUES (?, ?, ?, ?)',
+        #              (sender, recipient, subject, body))
+        # conn.commit()
+        # conn.close()
+
+        return jsonify({'message': 'Email sent successfully.'})
+    
+    return render_template('inbox.html')
+
+
 @app.route('/email/<int:email_id>')
 def email(email_id):
     conn = get_db_connection()
