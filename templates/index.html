@@ -1,23 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Inbox</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Sender</th>
-                <th>Subject</th>
-                <th>Timestamp</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for email in emails %}
-                <tr>
-                    <td>{{ email.sender }}</td>
-                    <td><a href="{{ url_for('email.email', email_id=email.id) }}">{{ email.subject }}</a></td>
-                    <td>{{ email.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h1>Gmail</h1>
+    
 {% endblock %}
