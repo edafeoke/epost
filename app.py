@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, login_required, logout_user
-from models import *
+import models
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -18,7 +18,7 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(user_id):
     # Implement the user loader function based on your User model
-    return User.query.get(int(user_id))
+    return models.User.query.get(int(user_id))
 
 @app.route('/')
 def index():
@@ -51,7 +51,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
         # Validate the login credentials and login the user
-        user = User.query.filter_by(email=email).first()
+        user = models.User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             login_user(user)
             return jsonify({'message': 'Logged in successfully'})
@@ -62,23 +62,24 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        print("inside the post method")
         email = request.form['email']
         password = request.form['password']
-        full_name = request.form['full_name']
+        full_name = request.form['name']
 
         # Check if the user already exists
-        user = User.query.filter_by(email=email).first()
+        user = models.User.query.filter_by(email=email).first()
         if user:
             flash('Email already exists. Please login.')
             return redirect(url_for('login'))
 
         # Create a new user
-        new_user = User(email=email, password=password, full_name=full_name)
+        new_user = models.User(email=email, password=password, full_name=full_name)
         db.session.add(new_user)
         db.session.commit()
 
         flash('Registration successful. Please login.')
-        return redirect(url_for('login'))
+        return redirect(url_for('register'))
 
     return render_template('register.html')
 
