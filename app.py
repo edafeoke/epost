@@ -3,13 +3,17 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin
 from datetime import datetime
+# import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/epost'
 db = SQLAlchemy(app=app)
 mail = Mail(app)
 login_manager = LoginManager(app)
@@ -73,16 +77,25 @@ def inbox():
 @login_required
 def compose():
     if request.method == 'POST':
-        for i in request.form.items():
-            print(i)
-        recipient = request.form['recipient']
-        subject = request.form['subject']
-        body = request.form['body']
+        data = request.get_json()
+        subject = data['subject']
+        body = data['message']
+        recipient = data['recipient']
+        print(recipient, subject, body)
+
         # Send the email using Flask-Mail
-        msg = Message(subject, recipients=[recipient])
-        msg.body = body
-        mail.send(msg)
-        return jsonify({'message': 'Email sent successfully'})
+        # msg = Message(subject, recipients=[recipient])
+        # msg.body = body
+        try:
+            # mail.send(msg)
+            send_email('greatedafeoke@gmail.com', recipient, subject, body)
+        except smtplib.SMTPException as e:
+            return jsonify({'message':str(e)})
+            # flash(e, category='danger')
+            # return render_template('compose.html')
+
+        flash("Mail successfully sent!", category='success')
+        return jsonify({'message': 'Email sent successfully'}) 
     return render_template('compose.html')
 
 # Add your routes for registration, login, and other functionality
@@ -133,6 +146,34 @@ def logout():
     logout_user()
     flash("Logout successful!", category='success')
     return redirect(url_for('login'))
+
+
+# Send mail function
+def send_email(sender, recipient, subject, message):
+    # Create a multipart message
+    msg = MIMEMultipart()
+    msg['From'] = sender
+    msg['To'] = recipient
+    msg['Subject'] = subject
+
+    # Attach the message to the email
+    msg.attach(MIMEText(message, 'plain'))
+
+    # Connect to the SMTP server
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587  # Change this if required
+    smtp_username = 'greatedafeoke@gmail.com'
+    smtp_password = 'sdzimhvcqzrbenzc'
+
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        # Initiate a secure connection
+        server.starttls()
+
+        # Login to the SMTP server
+        server.login(smtp_username, smtp_password)
+
+        # Send the email
+        server.sendmail(sender, recipient, msg.as_string())
 
 # Run the application
 if __name__ == '__main__':

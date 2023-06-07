@@ -8,9 +8,21 @@ document.querySelector('form').addEventListener('submit', function (event) {
     var message = document.querySelector('#message').innerHTML;
 
     // Perform further processing or AJAX request to send the email
-    console.log('Recipient:', recipient);
-    console.log('Subject:', subject);
-    console.log('Message:', message);
+
+    fetch('/compose', {
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            recipient,
+            subject,
+            message,
+        })
+    })
+    .then(res=>res.json())
+    .then(data=>console.log(data))
+    .catch(err=>console.error(err))
 
     // Reset form fields
     document.querySelector('form').reset();

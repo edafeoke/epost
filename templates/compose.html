@@ -5,7 +5,16 @@
         <!-- Compose -->
         <div class="container compose-container">
             <h1>Compose Email</h1>
-            <form method="POST" action="/compose">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %} 
+            <form>
                 <div class="form-group">
                     <label for="recipient">To:</label>
                     <input type="email" name="recipient" class="form-control" id="recipient" required>
@@ -32,10 +41,10 @@
                         <div id="file-list"></div>
                     </div>
                     <div class="compose-textarea">
-                        <div class="compose-textarea-content" name="message" contenteditable="true"></div>
+                        <div class="compose-textarea-content" id="message" contenteditable="true"></div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Send</button>
+                <input type="submit" class="btn btn-primary" value="Send"/>
             </form>
         </div>
         <script src="{{ url_for('static', filename='js/compose.js') }}"></script>
