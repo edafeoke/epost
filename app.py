@@ -61,7 +61,7 @@ class Email(db.Model):
 
 
 with app.app_context():
-    db.create_all()
+    # db.create_all()
     pass
 
 # Configure Flask-Login
