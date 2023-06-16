@@ -1,6 +1,7 @@
 # Flask configuration
 SECRET_KEY = 'your-secret-key'
-SQLALCHEMY_DATABASE_URI = 'mysql://root:@localhost:3306/epost'
+# SQLALCHEMY_DATABASE_URI = 'mysql://root:@localhost:3306/epost'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///epost.db'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 

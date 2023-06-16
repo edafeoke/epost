@@ -8,7 +8,13 @@ document.querySelector('form').addEventListener('submit', function (event) {
     var message = document.querySelector('#message').innerHTML;
 
     // Perform further processing or AJAX request to send the email
-
+     // Show loading spinner
+     var loadingSpinner = document.querySelector('.loading-spinner');
+     loadingSpinner.style.display = 'block';
+ 
+     // Disable submit button
+     var submitButton = document.querySelector('form #submit');
+     submitButton.disabled = true;
     fetch('/compose', {
         method:'POST',
         headers: {
@@ -21,12 +27,24 @@ document.querySelector('form').addEventListener('submit', function (event) {
         })
     })
     .then(res=>res.json())
-    .then(data=>console.log(data))
-    .catch(err=>console.error(err))
+    .then(data=>{
+        console.log(data)
+        // Hide loading spinner
+        loadingSpinner.style.display = 'none';
+        // Enable submit button
+        submitButton.disabled = false;
+    })
+    .catch(err=>{
+        console.error(err)
+        // Hide loading spinner
+        loadingSpinner.style.display = 'none';
+        // Enable submit button
+        submitButton.disabled = false;
+    })
 
     // Reset form fields
-    document.querySelector('form').reset();
-    document.querySelector('#message').innerHTML = '';
+    // document.querySelector('form').reset();
+    // document.querySelector('#message').innerHTML = '';
 });
 
 // Function to format text

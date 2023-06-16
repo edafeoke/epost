@@ -26,9 +26,18 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     full_name = db.Column(db.String(120), nullable=False)
+    email_server = db.Column(db.String(120), nullable=False)
+    email_username = db.Column(db.String(120), nullable=False)
+    email_password = db.Column(db.String(120), nullable=False)
+    port = db.Column(db.String(120), nullable=False)
 
-    def __init__(self, email, password, full_name):
+
+    def __init__(self, email, password, full_name, email_server, port, email_password, email_username):
         self.email = email
+        self.email_server = email_server
+        self.email_username = email_username
+        self.port = port
+        self.email_password = email_password
         self.password_hash = generate_password_hash(password)
         self.full_name = full_name
 
@@ -52,7 +61,7 @@ class Email(db.Model):
 
 
 with app.app_context():
-    # db.create_all()
+    db.create_all()
     pass
 
 # Configure Flask-Login
@@ -64,8 +73,9 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.route('/')
+@login_required
 def index():
-    return render_template('index.html')
+    return render_template('inbox.html')
 
 @app.route('/inbox', methods=['POST', 'GET'])
 @login_required
@@ -81,14 +91,21 @@ def compose():
         subject = data['subject']
         body = data['message']
         recipient = data['recipient']
-        print(recipient, subject, body)
+        sender = f"Private Person {'greatedafeoke@gmail.com'}"
+        receiver = f"A Test User {recipient}"
 
-        # Send the email using Flask-Mail
-        # msg = Message(subject, recipients=[recipient])
-        # msg.body = body
+        message = f"""\
+            Subject: Hi Mailtrap
+            To: {receiver}
+            From: {sender}
+
+            {body}"""
         try:
-            # mail.send(msg)
-            send_email('greatedafeoke@gmail.com', recipient, subject, body)
+
+            with smtplib.SMTP("sandbox.smtp.mailtrap.io", 2525) as server:
+                server.login("eacea19be6170e", "91a0624d8a987b")
+                server.sendmail(sender, receiver, message)
+        
         except smtplib.SMTPException as e:
             return jsonify({'message':str(e)})
             # flash(e, category='danger')
@@ -121,16 +138,33 @@ def register():
         
         email = request.form['email']
         password = request.form['password']
+        confirm_password = request.form['confirm_password']
         full_name = request.form['name']
+        port = request.form['port']
+        email_server = request.form['email_server']
+        email_username = request.form['email_username']
+        email_password = request.form['email_password']
+
 
         # Check if the user already exists
         user = User.query.filter_by(email=email).first()
+        if password != confirm_password:
+            flash('Password does match!', category='danger')
+            return redirect(url_for('register'))
+        
         if user:
             flash('Email already exists. Please login.', category='danger')
             return redirect(url_for('login'))
 
+        
         # Create a new user
-        new_user = User(email=email, password=password, full_name=full_name)
+        new_user = User(email=email,
+                        password=password,
+                        full_name=full_name,
+                        email_server=email_server,
+                        email_username=email_username,
+                        email_password=email_password,
+                        port=port)
         db.session.add(new_user)
         db.session.commit()
 
@@ -151,6 +185,8 @@ def logout():
 # Send mail function
 def send_email(sender, recipient, subject, message):
     # Create a multipart message
+    user = User.query.filter_by(email=sender).first()
+
     msg = MIMEMultipart()
     msg['From'] = sender
     msg['To'] = recipient
@@ -160,10 +196,10 @@ def send_email(sender, recipient, subject, message):
     msg.attach(MIMEText(message, 'plain'))
 
     # Connect to the SMTP server
-    smtp_server = 'smtp.gmail.com'
-    smtp_port = 587  # Change this if required
-    smtp_username = 'greatedafeoke@gmail.com'
-    smtp_password = 'sdzimhvcqzrbenzc'
+    smtp_server = user.email_server
+    smtp_port = user.port  # Change this if required
+    smtp_username = user.email_username
+    smtp_password = user.email_password
 
     with smtplib.SMTP(smtp_server, smtp_port) as server:
         # Initiate a secure connection
@@ -177,4 +213,5 @@ def send_email(sender, recipient, subject, message):
 
 # Run the application
 if __name__ == '__main__':
+    # db.create_all()
     app.run(debug=True)
