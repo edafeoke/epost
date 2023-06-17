@@ -4,11 +4,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gmail Clone - Compose</title>
+    <title>E-Post</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/compose.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/inbox.css') }}">
+    <style>
+        /* Updated CSS Styles for Responsive Sidebar and Navbar */
+        body {
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 50px 0;
+            width: 250px;
+            background-color: #95ade0;
+            transition: all 0.3s;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            transition: all 0.3s;
+        }
+
+        .navbar-toggler {
+            border: none;
+            outline: none;
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar {
+                position: fixed;
+                z-index: 100;
+                top: 0;
+                bottom: 0;
+                left: -250px;
+                width: 250px;
+                transition: all 0.3s;
+            }
+
+            .main-content {
+                margin-left: 0;
+                transition: all 0.3s;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content.active {
+                margin-left: 250px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -19,7 +72,8 @@
             <li><a href="{{ url_for('inbox') }}"><i class="fas fa-inbox"></i> Inbox</a></li>
             <li><a href="sent.html"><i class="fas fa-paper-plane"></i> Sent</a></li>
             <li><a href="drafts.html"><i class="fas fa-file"></i> Drafts</a></li>
-            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li> <!-- Added logout link -->
+            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <!-- Added logout link -->
         </ul>
     </aside>
 
@@ -27,30 +81,28 @@
     <div class="main-content">
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Gmail</a>
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('compose') }}"><i class="fas fa-edit"></i> Compose</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('inbox') }}"><i class="fas fa-inbox"></i> Inbox</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="sent.html"><i class="fas fa-paper-plane"></i> Sent</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="drafts.html"><i class="fas fa-file"></i> Drafts</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li> <!-- Added logout link -->
-                </ul>
-            </div>
-        </nav>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('index') }}">E-Post</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="sidebar" data-bs-target=".sidebar"
+            aria-controls="sidebar" aria-expanded="false" aria-label="Toggle Sidebar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
         {% block content %}{% endblock %}
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Toggle sidebar when navbar toggler is clicked
+            $(".navbar-toggler").click(function () {
+                $(".sidebar").toggleClass("active");
+                $(".main-content").toggleClass("active");
+            });
+        });
+    </script>
 </body>
 
 </html>
