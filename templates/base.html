@@ -61,6 +61,31 @@
                 margin-left: 250px;
             }
         }
+        .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -250px; /* Adjusted initial position */
+    right: 0; /* Added property to cover the entire width */
+    z-index: 100;
+    padding: 50px 0;
+    width: 250px;
+    background-color: #c2c7d2;
+    transition: all 0.3s;
+}
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        position: fixed;
+        z-index: 100;
+        top: 0;
+        bottom: 0;
+        left: -250px;
+        right: 0; /* Added property to cover the entire width */
+        transition: all 0.3s;
+    }
+}
+
     </style>
 </head>
 
